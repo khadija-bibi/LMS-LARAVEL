@@ -72,12 +72,7 @@ class RoleController extends Controller
 
         $role = Role::findOrFail($id);
         $hasPermissions = $role->permissions->pluck('name');
-        return view('roles.edit',[
-            'role' => $role,
-            'hasPermissions' => $hasPermissions,
-            'permissions' => $permissions,
-
-        ]);
+        return view('roles.edit', compact('permissions', 'role', 'hasPermissions'));
     }
 
     /**
@@ -111,20 +106,10 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        $id = $request->id;
-        $role = Role::find($id);
-        if($role==null){
-            session()->flash('error','Role not found');
-            return response()->json([
-                'status'=>false
-            ]);
-        }
-        $role->delete();
+        Role::findOrFail(decrypt($id))->delete();
         session()->flash('success','Role deleted successfully');
-        return response()->json([
-            'status'=>true
-        ]);
+        return redirect()->back();
     }
 }

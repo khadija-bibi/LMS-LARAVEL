@@ -24,15 +24,15 @@
                 </thead>
                 <tbody class="bg-white">
                     @if ($roles->isNotEmpty())
-                        @foreach ( $roles as $role)
+                        @foreach ( $roles as $key =>  $role)
                         <tr class="border-b">
-                            <td class="px-6 py-3 text-left">{{$role->id}}</td>
+                            <td class="px-6 py-3 text-left">{{$key + 1}}</td>
                             <td class="px-6 py-3 text-left">{{$role->name}}</td>
                             <td class="px-6 py-3 text-left">{{$role->permissions->pluck('name')->implode(', ')}}</td>
                             <td class="px-6 py-3 text-left">{{\Carbon\Carbon::parse($role->created_at)->format('d M, Y')}}</td>
                             <td class="px-6 py-3 text-center">
-                                <a href="{{route('roles.edit',$role->id)}}" class="bg-slate-700 text-sm text-white rounded-md px-3 py-2 hover:bg-slate-600">Edit</a>
-                                <a href="javascript:void" onclick="deleteRole({{$role->id}})" class="bg-red-700 text-sm text-white rounded-md px-3 py-2  hover:bg-red-600">Delete</a>
+                                <a href="{{route('roles.edit',encrypt($role->id))}}" class="bg-slate-700 text-sm text-white rounded-md px-3 py-2 hover:bg-slate-600">Edit</a>
+                                <a href="{{ route('role.destroy', encrypt($role->id)) }}" class="bg-red-700 text-sm text-white rounded-md px-3 py-2  hover:bg-red-600">Delete</a>
                             </td>
                         </tr>
                         @endforeach
@@ -45,24 +45,4 @@
             </div>
         </div>
     </div>
-    <x-slot name="script">
-        <script type="text/javascript">
-            function deleteRole(id){
-                if(confirm("Are you sure you want to delete?")){
-                    $.ajax({
-                        url:'{{route("roles.destroy")}}',
-                        type:'delete',
-                        data:{id:id},
-                        dataType:'json',
-                        headers: {
-                            'x-csrf-token': '{{csrf_token()}}'
-                        },
-                        success:function(response){
-                            window.location.href = '{{route("roles.index")}}'
-                        }
-                    })
-                }
-            }
-        </script>
-    </x-slot>
 </x-app-layout>
